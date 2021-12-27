@@ -8,3 +8,10 @@ export interface AuthUser {
     password: string;
     token: string;
 }
+
+export interface User {
+    _id: ObjectId;
+    firstName: string;
+    lastName: string;
+    email: string;
+}

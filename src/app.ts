@@ -3,10 +3,14 @@ import { LISTEN_PORT, MONGO_PASS, MONGO_URL, MONGO_USER } from './constants';
 import routes from './router/routes';
 export const app = express();
 import mongoose from 'mongoose';
+import cors from 'cors';
 
 app.use(json()) // for parsing application/json
 app.use(urlencoded({ extended: true })) // for parsing application/x-www-form-
 app.use(routes)
+app.use(cors());
+
+
 
 app.get('/', (req, res) => {
   res.send('SERVER IS  WORKING!');
