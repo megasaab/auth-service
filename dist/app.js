@@ -46,12 +46,12 @@ exports.app.get('/', (req, res) => {
 start();
 function start() {
     return __awaiter(this, void 0, void 0, function* () {
-        yield initApp().then(() => {
+        initApp().then(() => {
             mongoose_1.default.connect(constants_1.MONGO_URL, {
                 auth: { username: constants_1.MONGO_USER, password: constants_1.MONGO_PASS },
                 autoIndex: true,
                 authSource: 'admin',
-            });
+            }, () => console.log('database connected'));
         });
     });
 }

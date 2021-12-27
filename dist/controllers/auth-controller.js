@@ -52,5 +52,31 @@ authRouter.post('/register', (request, response) => __awaiter(void 0, void 0, vo
         console.log(error);
     }
 }));
+authRouter.post('/login', (request, response) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        // Get user input
+        const { email, password } = request.body;
+        // Validate user input
+        if (!(email && password)) {
+            return response.status(http_status_codes_1.StatusCodes.BAD_REQUEST).send((0, http_status_codes_1.getReasonPhrase)(http_status_codes_1.StatusCodes.BAD_REQUEST));
+        }
+        // Validate if user exist in our database
+        const user = yield user_1.USER.findOne({ email });
+        if (user && (yield bcryptjs_1.default.compare(password, user.password))) {
+            // Create token
+            const token = jsonwebtoken_1.default.sign({ user_id: user._id, email }, constants_1.TOKEN_KEY, {
+                expiresIn: "2h",
+            });
+            // save user token
+            user.token = token;
+            // user
+            return response.status(200).json(user);
+        }
+        return response.status(http_status_codes_1.StatusCodes.BAD_REQUEST).send("Invalid Credentials");
+    }
+    catch (err) {
+        console.log(err);
+    }
+}));
 exports.default = authRouter;
 //# sourceMappingURL=auth-controller.js.map

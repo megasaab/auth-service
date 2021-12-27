@@ -17,7 +17,7 @@ authRouter.post('/register', async (request, response) => {
 
         // Validate user input
         if (!(email && password && firstName && lastName)) {
-            return response.status(StatusCodes.OK).send(getReasonPhrase(StatusCodes.NOT_ACCEPTABLE));
+          return  response.status(StatusCodes.OK).send(getReasonPhrase(StatusCodes.NOT_ACCEPTABLE));
         }
 
         // Check if user exist in database
@@ -25,7 +25,7 @@ authRouter.post('/register', async (request, response) => {
         const existsUser = await USER.findOne({ email });
 
         if (existsUser) {
-            return response.status(StatusCodes.CONFLICT).send("User Already Exist. Please Login");
+          return  response.status(StatusCodes.CONFLICT).send("User Already Exist. Please Login");
         }
 
 
@@ -52,11 +52,47 @@ authRouter.post('/register', async (request, response) => {
         user.token = token;
 
         // return new user
-        return response.status(StatusCodes.CREATED).json(user);
+       return response.status(StatusCodes.CREATED).json(user);
     } catch (error) {
         console.log(error);
     }
 
+});
+
+authRouter.post('/login', async (request, response) => {
+    try {
+        // Get user input
+        const { email, password } = request.body;
+
+        // Validate user input
+        if (!(email && password)) {
+           return  response.status(StatusCodes.BAD_REQUEST).send(getReasonPhrase(StatusCodes.BAD_REQUEST));
+        }
+
+        // Validate if user exist in our database
+        const user: AuthUser = await USER.findOne({ email });
+
+
+        if (user && (await bcrypt.compare(password, user.password))) {
+            // Create token
+            const token = jwt.sign(
+                { user_id: user._id, email },
+                TOKEN_KEY,
+                {
+                    expiresIn: "2h",
+                }
+            );
+
+            // save user token
+            user.token = token;
+
+            // user
+           return response.status(200).json(user);
+        }
+        return response.status(StatusCodes.BAD_REQUEST).send("Invalid Credentials");
+    } catch (err) {
+        console.log(err)
+    }
 });
 
 export default authRouter;
