@@ -10,9 +10,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
+const auth_1 = require("../middleware/auth");
 const user_1 = require("../model/user");
 const usersRouter = (0, express_1.Router)();
-usersRouter.get('/all', (request, response) => __awaiter(void 0, void 0, void 0, function* () {
+usersRouter.get('/all', auth_1.authMiddleware, (request, response) => __awaiter(void 0, void 0, void 0, function* () {
     const users = yield user_1.USER.find();
     return response.json(users);
 }));
